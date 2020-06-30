@@ -14,7 +14,7 @@ import Transaction from '../models/Transaction';
 const transactionsRouter = Router();
 const upload = multer({
   storage: multer.diskStorage({
-    destination: path.resolve(__dirname, '..', 'tmp'),
+    destination: path.resolve(__dirname, '..', '..', 'tmp'),
     filename(request, file, callback) {
       const fileHash = crypto.randomBytes(10).toString('HEX');
       const fileName = `${fileHash}-${file.originalname}`;
@@ -61,21 +61,11 @@ transactionsRouter.post(
   '/import',
   upload.single('file'),
   async (request, response) => {
-    const createTransactionService = new CreateTransactionService();
     const importTransactionsService = new ImportTransactionsService();
-    const transactions: Transaction[] = [];
 
-    const csvData = await importTransactionsService.execute(request.file.path);
-
-    csvData.forEach(async ({ title, value, type, category }) => {
-      const transaction = await createTransactionService.execute({
-        title,
-        value,
-        type,
-        category,
-      });
-      transactions.push(transaction);
-    });
+    const transactions = await importTransactionsService.execute(
+      request.file.path,
+    );
 
     return response.json(transactions);
   },

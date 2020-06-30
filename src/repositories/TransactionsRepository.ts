@@ -16,8 +16,6 @@ class TransactionsRepository extends Repository<Transaction> {
   public async getBalance(): Promise<Response> {
     const transactions = await this.find();
 
-    console.log(transactions);
-
     const balance = {
       income: 0,
       outcome: 0,
